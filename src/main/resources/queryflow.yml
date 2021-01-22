@@ -1,0 +1,7 @@
+defaultPageLimit: 10
+camelCaseToSnake: true
+url: jdbc:mysql://xxx.xxx.xxx.xxx:3306/flume_helper?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false&allowMultiQueries=true&serverTimezone=UTC&allowMultiQueries=true&useAffectedRows=true
+username: xxxx
+password: xxxxxxxx
+maxActive: 5
+initialSize: 2

@@ -1,0 +1,72 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, hr, blockquote, dl, dt, dd, form, fieldset, legend, button, input, textarea, th, td {
+    margin: 0;
+    padding: 0;
+}
+.cursor:hover {
+    color: #409EFF;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.global-container {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    height: 100%;
+}
+
+.back-menu:hover {
+    cursor: pointer;
+}
+
+.el-link-group .el-link+.el-link {
+    margin-left: 10px;
+}
+.el-link-group .el-link {
+    font-weight: normal;
+}
+
+.el-checkbox__label {
+    font-weight: normal !important;
+}
+
+.config-item-root .el-form-item {
+    margin-bottom: 12px;
+}
+.config-item-root .el-form-item__error {
+    padding-top: 0;
+}
+
+.config-item-root .el-table__row td {
+    padding: 2px 0;
+}
+
+.config-item-root .el-table td, .el-table th.is-leaf {
+    border-bottom: 1px solid #DCDFE6;
+}
+.config-item-form-item.el-form-item {
+    width: 100%;
+}
+.config-item-form-item.el-form-item .el-form-item__content {
+    width: 100%;
+}
+.config-item-form-item.el-form-item .el-form-item__content .el-select {
+    width: 100%;
+}
+.config-item-label.required:before {
+    content: '*';
+    color: #F56C6C;
+    margin-right: 4px;
+}
