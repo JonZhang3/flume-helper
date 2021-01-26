@@ -22,7 +22,7 @@
             <el-tabs v-model="activeTab">
                 <el-tab-pane label="Channels" name="Channels">
                     <div>
-                        <el-row><el-button type="primary" size="mini" @click="handleChannelsAdd(1)">加一个</el-button></el-row>
+                        <el-row><el-button type="primary" size="mini" @click="handleAdd(1)">加一个</el-button></el-row>
                         <el-row>
                             <el-form :inline="true" :model="channelForm">
                                 <el-collapse v-if="channelForm.channels && channelForm.channels.length > 0"
@@ -30,8 +30,7 @@
                                     <el-collapse-item v-for="(item, index) in channelForm.channels" :name="index" :key="index">
                                         <template slot="title">
                                             {{item.name}} [{{item.type}}] <el-link :underline="false"
-                                                                   @click="handleItemDelete(1, index, $event)"
-                                                                   style="margin-left: 10px;" type="danger">删除</el-link>
+                                                                   @click="handleItemDelete(1, index, $event)" style="margin-left: 10px;" type="danger">删除</el-link>
                                         </template>
                                         <el-form-item label="名称" :prop="`channels.${index}.name`" :rules="rules.requiredInput">
                                             <el-input placeholder="必填" size="small" v-model="item.name"></el-input>
@@ -53,7 +52,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane label="Sources" name="Sources">
-                    <el-row><el-button type="primary" size="mini" @click="handleChannelsAdd(2)">加一个</el-button></el-row>
+                    <el-row><el-button type="primary" size="mini" @click="handleAdd(2)">加一个</el-button></el-row>
                     <el-row>
                         <el-form :inline="true">
                             <el-collapse v-if="sources && sources.length > 0"
@@ -77,6 +76,20 @@
                                             <el-option v-for="c in channelForm.channels" :key="c.name" :label="c.name" :value="c.name"></el-option>
                                         </el-select>
                                     </el-form-item>
+                                    <div>
+                                        <div>
+                                            <div>Interceptors</div>
+                                            <el-button type="primary" size="mini" @click="handleInterceptorsAdd">+Interceptor</el-button>
+                                        </div>
+                                        <el-collapse v-if="interceptors && interceptors.length > 0" v-model="interceptorActiveCollapse" accordion @change="handleInterceptorsCollapseChange">
+                                            <el-collapse-item v-for="(item, index) in interceptors" :name="index" :key="index">
+                                                <template slot="title">
+                                                    {{item.type}} <el-link :underline="false" @click="handleInterceptorDelete(index, $event)" style="margin-left: 10px;" type="danger">删除</el-link>
+                                                </template>
+                                                <config-form-items :ref="`interceptor-${index}`" v-if="item.type" type="interceptor" :properties="Interceptors[item.type]" :data="interceptors[index]"></config-form-items>
+                                            </el-collapse-item>
+                                        </el-collapse>
+                                    </div>
                                     <br/>
                                     <config-form-items :ref="`source-${index}`" v-if="item.type" type="source" :properties="Sources[item.type]" :data="sources[index]"></config-form-items>
                                 </el-collapse-item>
@@ -86,7 +99,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane label="Sinks" name="Sinks">
-                    <el-row><el-button type="primary" size="mini" @click="handleChannelsAdd(3)">加一个</el-button></el-row>
+                    <el-row><el-button type="primary" size="mini" @click="handleAdd(3)">加一个</el-button></el-row>
                     <el-row>
                         <el-form :inline="true">
                             <el-collapse v-if="sinks && sinks.length > 0"
@@ -120,6 +133,15 @@
                 </el-tab-pane>
             </el-tabs>
         </el-row>
+        <el-dialog :visible.sync="interceptorTypeSelectDiaVis" width="30%" title="选择 Interceptor 类型">
+            <el-select v-model="interceptorSelectedVal" placeholder="请选择" style="width: 100%;">
+                <el-option v-for="item in interceptorTypes" :label="item" :key="item" :value="item"></el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="interceptorTypeSelectDiaVis = false">取 消</el-button>
+                <el-button type="primary" @click="handleIntercetorAddDialogOk">确 定</el-button>
+            </span>
+        </el-dialog>
     </el-container>
 </template>
 
@@ -127,22 +149,27 @@
 import Sources from '../../flume-configs/sources';
 import Channels from '../../flume-configs/channels';
 import Sinks from '../../flume-configs/sinks';
+import Interceptors from '../../flume-configs/interceptors';
 import api from "@/api/api";
 import utils from "@/common/utils";
 
 import ConfigFormItems from "@/pages/configs/ConfigFormItems";
+import InterceptorItem from "@/pages/configs/InterceptorItem";
 
 export default {
     name: 'new-configs',
     components: {
-        ConfigFormItems
+        ConfigFormItems,
+        InterceptorItem
     },
     data() {
         return {
             Sources,
             Channels,
             Sinks,
+            Interceptors,
             activeTab: 'Channels',
+            interceptorTypeSelectDiaVis: false,
 
             agentNameForm: {
                 agentName: 'a1',
@@ -157,6 +184,9 @@ export default {
             sourcesActiveCollapse: '',
             sources: [],
             sourcesIndex: 0,
+            interceptorSelectedVal: '',
+            interceptorActiveCollapse: '',
+            interceptors: [],
 
             sinksActiveCollapse: '',
             sinks: [],
@@ -165,6 +195,7 @@ export default {
             sourceTypes: Object.keys(Sources),
             channelTypes: Object.keys(Channels),
             sinkTypes: Object.keys(Sinks),
+            interceptorTypes: Object.keys(Interceptors),
 
             rules: {
                 agentName: [
@@ -189,8 +220,34 @@ export default {
         handleSinksCollapseChange(active) {
             this.sinksActiveCollapse = active;
         },
-
-        handleChannelsAdd(type) {
+        handleInterceptorsCollapseChange(active) {
+            this.interceptorActiveCollapse = active;
+        },
+        handleInterceptorsAdd() {
+            if(this.interceptors.length >= 10) {
+                this.$message.info("最多添加 10 个 Interceptors");
+            }
+            this.interceptorSelectedVal = '';
+            this.interceptorTypeSelectDiaVis = true;
+        },
+        handleIntercetorAddDialogOk() {
+            if(!this.interceptorSelectedVal) {
+                this.$message.warning("请选择一个 Interceptor 类型");
+                return;
+            }
+            this.interceptors.push({
+                type: this.interceptorSelectedVal
+            });
+            this.interceptorSelectedVal = '';
+            this.interceptorTypeSelectDiaVis = false;
+            this.interceptorActiveCollapse = this.interceptors.length - 1;
+        },
+        handleInterceptorDelete(index, e) {
+            e.stopPropagation();
+            e.preventDefault();
+            this.interceptors.splice(index, 1);
+        },
+        handleAdd(type) {
             switch (type) {
                 case 1:
                     if(this.channelForm.channels.length >= 10) {

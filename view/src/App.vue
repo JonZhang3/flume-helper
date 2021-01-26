@@ -14,12 +14,12 @@
                             <span>配置管理</span>
                         </template>
                     </el-menu-item>
-<!--                    <el-menu-item index="/plugins">-->
-<!--                        <template slot="title">-->
-<!--                            <i class="el-icon-s-platform"></i>-->
-<!--                            <span>插件管理</span>-->
-<!--                        </template>-->
-<!--                    </el-menu-item>-->
+                    <el-menu-item index="/plugins">
+                        <template slot="title">
+                            <i class="el-icon-s-platform"></i>
+                            <span>拓扑管理</span>
+                        </template>
+                    </el-menu-item>
                 </el-menu>
             </el-aside>
             <el-main style="overflow-y: auto;">

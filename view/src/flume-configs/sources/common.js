@@ -11,16 +11,5 @@ export default {
         type: Object,
         default: {},
         description: 'Depends on the selector.type value'
-    },
-    interceptors: {
-        type: Array,
-        default: [],
-        separator: ' ',
-        description: 'list of interceptors'
-    },
-    'interceptors.*': {
-        type: Object,
-        default: {},
-        description: 'interceptors parameters'
     }
 }
