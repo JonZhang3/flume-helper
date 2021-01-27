@@ -1,3 +1,6 @@
 export default {
-    Select: 'Select'
+    Select: 'Select',
+    Channels: 'Channels',
+    Channel: 'Channel',
+    ObjectChannels: 'ObjectChannels'
 }

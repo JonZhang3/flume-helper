@@ -18,5 +18,11 @@ export default {
     search_replace,
     regex_filter,
     regex_extractor,
-    custom: ''
+    custom: {
+        '*.': {
+            type: Object,
+            default: {},
+            description: 'custom properties'
+        }
+    }
 }

@@ -11,8 +11,7 @@
         </el-table-column>
         <el-table-column label="值" width="510">
             <template slot-scope="scope">
-                <m-name-value-inputs :ref="`nv-${scope.row}`"
-                                     :data="configData[scope.row]"
+                <m-name-value-inputs :ref="`nv-${scope.row}`" :data="configData[scope.row]"
                                      v-if="properties[scope.row].type === Object" size="small"></m-name-value-inputs>
                 <el-form-item v-else :key="index" class="config-item-form-item">
                     <template v-if="properties[scope.row].type === String">
@@ -23,17 +22,20 @@
                     <el-select v-else-if="properties[scope.row].type === Types.Select" v-model="configData[scope.row]" size="small">
                         <el-option v-for="item in properties[scope.row].select" :label="item" :key="item" :value="item"></el-option>
                     </el-select>
-                    <el-checkbox v-else-if="properties[scope.row].type === Boolean" v-model="configData[scope.row]"
-                                 size="small">{{configData[scope.row] ? 'true' : 'false'}}</el-checkbox>
+                    <el-checkbox v-else-if="properties[scope.row].type === Boolean" v-model="configData[scope.row]" size="small">
+                        {{configData[scope.row] ? 'true' : 'false'}}
+                    </el-checkbox>
                     <el-select v-else-if="properties[scope.row].type === Array" v-model="configData[scope.row]" size="small"
                                multiple allow-create filterable default-first-option placeholder="请输入，按回车确定"></el-select>
+                    <el-select v-else-if="properties[scope.row].type === Types.Channels" v-model="configData[scope.row]"
+                               size="small" multiple placeholder="请选择 Channel">
+                        <el-option v-for="c in channels" :key="c.name" :label="c.name" :value="c.name"></el-option>
+                    </el-select>
                 </el-form-item>
             </template>
         </el-table-column>
         <el-table-column label="说明">
-            <template slot-scope="scope">
-                <span>{{properties[scope.row].description}}</span>
-            </template>
+            <template slot-scope="scope"><span>{{properties[scope.row].description}}</span></template>
         </el-table-column>
     </el-table>
 </template>
@@ -51,7 +53,8 @@ export default {
     props: {
         type: String,
         properties: Object,
-        data: Object
+        data: Object,
+        channels: Object
     },
     mounted() {
         this.configData.name = this.data.name;

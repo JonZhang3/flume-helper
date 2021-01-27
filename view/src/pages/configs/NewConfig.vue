@@ -22,7 +22,7 @@
             <el-tabs v-model="activeTab">
                 <el-tab-pane label="Channels" name="Channels">
                     <div>
-                        <el-row><el-button type="primary" size="mini" @click="handleAdd(1)">加一个</el-button></el-row>
+                        <el-row><el-button type="primary" size="mini" @click="handleAdd(1)" style="margin-bottom: 5px;">加一个</el-button></el-row>
                         <el-row>
                             <el-form :inline="true" :model="channelForm">
                                 <el-collapse v-if="channelForm.channels && channelForm.channels.length > 0"
@@ -32,18 +32,20 @@
                                             {{item.name}} [{{item.type}}] <el-link :underline="false"
                                                                    @click="handleItemDelete(1, index, $event)" style="margin-left: 10px;" type="danger">删除</el-link>
                                         </template>
-                                        <el-form-item label="名称" :prop="`channels.${index}.name`" :rules="rules.requiredInput">
-                                            <el-input placeholder="必填" size="small" v-model="item.name"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="类型" :prop="`channels.${index}.name`" :rules="rules.requiredSelect">
-                                            <el-select placeholder="请选择" size="small" v-model="item.type">
-                                                <el-option v-for="item in channelTypes"
-                                                           :key="item" :label="item" :value="item"></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                        <br/>
-                                        <config-form-items :ref="`channel-${index}`" v-if="item.type" type="channel"
-                                                           :properties="Channels[item.type]" :data="channelForm.channels[index]"></config-form-items>
+                                        <div style="margin-left: 15px;">
+                                            <el-form-item label="名称" :prop="`channels.${index}.name`" :rules="rules.requiredInput">
+                                                <el-input placeholder="必填" size="small" v-model="item.name"></el-input>
+                                            </el-form-item>
+                                            <el-form-item label="类型" :prop="`channels.${index}.name`" :rules="rules.requiredSelect">
+                                                <el-select placeholder="请选择" size="small" v-model="item.type">
+                                                    <el-option v-for="item in channelTypes"
+                                                               :key="item" :label="item" :value="item"></el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                            <br/>
+                                            <config-form-items :ref="`channel-${index}`" v-if="item.type" type="channel"
+                                                               :properties="Channels[item.type]" :data="channelForm.channels[index]"></config-form-items>
+                                        </div>
                                     </el-collapse-item>
                                 </el-collapse>
                             </el-form>
@@ -52,7 +54,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane label="Sources" name="Sources">
-                    <el-row><el-button type="primary" size="mini" @click="handleAdd(2)">加一个</el-button></el-row>
+                    <el-row><el-button type="primary" size="mini" @click="handleAdd(2)" style="margin-bottom: 5px;">加一个</el-button></el-row>
                     <el-row>
                         <el-form :inline="true">
                             <el-collapse v-if="sources && sources.length > 0"
@@ -62,36 +64,57 @@
                                         {{item.name}} [{{item.type}}] <el-link :underline="false" @click="handleItemDelete(2, index, $event)"
                                                                style="margin-left: 10px;" type="danger">删除</el-link>
                                     </template>
-                                    <el-form-item label="名称" required>
-                                        <el-input placeholder="必填" size="small" v-model="item.name"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="类型" required>
-                                        <el-select placeholder="请选择" size="small" v-model="item.type">
-                                            <el-option v-for="item in sourceTypes"
-                                                       :key="item" :label="item" :value="item"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                    <el-form-item label="Channels" required>
-                                        <el-select placeholder="请选择" size="small" multiple v-model="item.channels">
-                                            <el-option v-for="c in channelForm.channels" :key="c.name" :label="c.name" :value="c.name"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                    <div>
+                                    <div style="margin-left: 15px;">
+                                        <el-form-item label="名称" required>
+                                            <el-input placeholder="必填" size="small" v-model="item.name"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="类型" required>
+                                            <el-select placeholder="请选择" size="small" v-model="item.type">
+                                                <el-option v-for="item in sourceTypes"
+                                                           :key="item" :label="item" :value="item"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="Channels" required>
+                                            <el-select placeholder="请选择" size="small" multiple v-model="item.channels">
+                                                <el-option v-for="c in channelForm.channels" :key="c.name" :label="c.name" :value="c.name"></el-option>
+                                            </el-select>
+                                        </el-form-item>
                                         <div>
-                                            <div>Interceptors</div>
-                                            <el-button type="primary" size="mini" @click="handleInterceptorsAdd">+Interceptor</el-button>
+                                            <div>Selector</div>
+                                            <el-form-item label="type" required>
+                                                <el-select placeholder="请选择" size="small" v-model="selector.type">
+                                                    <el-option v-for="s in Object.keys(Selectors)" :key="s" :label="s" :value="s"></el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                            <config-form-items :ref="`selector-${index}`" v-if="selector.type" type="selector"
+                                                               :channels="channelForm.channels"
+                                                               :properties="Selectors[selector.type]" :data="selector"></config-form-items>
                                         </div>
-                                        <el-collapse v-if="interceptors && interceptors.length > 0" v-model="interceptorActiveCollapse" accordion @change="handleInterceptorsCollapseChange">
-                                            <el-collapse-item v-for="(item, index) in interceptors" :name="index" :key="index">
-                                                <template slot="title">
-                                                    {{item.type}} <el-link :underline="false" @click="handleInterceptorDelete(index, $event)" style="margin-left: 10px;" type="danger">删除</el-link>
-                                                </template>
-                                                <config-form-items :ref="`interceptor-${index}`" v-if="item.type" type="interceptor" :properties="Interceptors[item.type]" :data="interceptors[index]"></config-form-items>
-                                            </el-collapse-item>
-                                        </el-collapse>
+                                        <div>
+                                            <div>
+                                                <div>Interceptors</div>
+                                                <el-button type="primary" size="mini" @click="handleInterceptorsAdd" style="margin-bottom: 5px;">+Interceptor</el-button>
+                                            </div>
+                                            <el-collapse v-if="interceptors && interceptors.length > 0" v-model="interceptorActiveCollapse"
+                                                         style="margin-left: 15px;"
+                                                         accordion @change="handleInterceptorsCollapseChange">
+                                                <el-collapse-item v-for="(item, index) in interceptors" :name="index" :key="index">
+                                                    <template slot="title">
+                                                        <div v-if="item.type === 'custom'" @click="(e) => {e.stopPropagation()}">
+                                                            <el-input size="small" v-model="item.customType" placeholder="请填写类型"></el-input>
+                                                        </div>
+                                                        <span v-else>{{item.type}}</span>
+                                                        <el-link :underline="false" @click="handleInterceptorDelete(index, $event)" style="margin-left: 10px;" type="danger">删除</el-link>
+                                                    </template>
+                                                    <config-form-items :ref="`interceptor-${index}`" v-if="item.type" type="interceptor"
+                                                                       :properties="Interceptors[item.type]" :data="interceptors[index]"></config-form-items>
+                                                </el-collapse-item>
+                                            </el-collapse>
+                                        </div>
+                                        <br/>
+                                        <div v-if="item.type">Configs</div>
+                                        <config-form-items :ref="`source-${index}`" v-if="item.type" type="source" :properties="Sources[item.type]" :data="sources[index]"></config-form-items>
                                     </div>
-                                    <br/>
-                                    <config-form-items :ref="`source-${index}`" v-if="item.type" type="source" :properties="Sources[item.type]" :data="sources[index]"></config-form-items>
                                 </el-collapse-item>
                             </el-collapse>
                         </el-form>
@@ -99,7 +122,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane label="Sinks" name="Sinks">
-                    <el-row><el-button type="primary" size="mini" @click="handleAdd(3)">加一个</el-button></el-row>
+                    <el-row><el-button type="primary" size="mini" @click="handleAdd(3)" style="margin-bottom: 5px;">加一个</el-button></el-row>
                     <el-row>
                         <el-form :inline="true">
                             <el-collapse v-if="sinks && sinks.length > 0"
@@ -110,22 +133,24 @@
                                                                @click="handleItemDelete(3, index, $event)"
                                                                type="danger">删除</el-link>
                                     </template>
-                                    <el-form-item label="名称" required>
-                                        <el-input placeholder="必填" size="small" v-model="item.name"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="类型" required>
-                                        <el-select placeholder="请选择" size="small" v-model="item.type">
-                                            <el-option v-for="item in sinkTypes"
-                                                       :key="item" :label="item" :value="item"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                    <el-form-item label="Channel" required>
-                                        <el-select placeholder="请选择" size="small" v-model="item.channel">
-                                            <el-option v-for="c in channelForm.channels" :key="c.name" :label="c.name" :value="c.name"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                    <br/>
-                                    <config-form-items :ref="`sink-${index}`" v-if="item.type" type="sink" :properties="Sinks[item.type]" :data="sinks[index]"></config-form-items>
+                                    <div style="margin-left: 15px;">
+                                        <el-form-item label="名称" required>
+                                            <el-input placeholder="必填" size="small" v-model="item.name"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="类型" required>
+                                            <el-select placeholder="请选择" size="small" v-model="item.type">
+                                                <el-option v-for="item in sinkTypes"
+                                                           :key="item" :label="item" :value="item"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="Channel" required>
+                                            <el-select placeholder="请选择" size="small" v-model="item.channel">
+                                                <el-option v-for="c in channelForm.channels" :key="c.name" :label="c.name" :value="c.name"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <br/>
+                                        <config-form-items :ref="`sink-${index}`" v-if="item.type" type="sink" :properties="Sinks[item.type]" :data="sinks[index]"></config-form-items>
+                                    </div>
                                 </el-collapse-item>
                             </el-collapse>
                         </el-form>
@@ -135,7 +160,7 @@
         </el-row>
         <el-dialog :visible.sync="interceptorTypeSelectDiaVis" width="30%" title="选择 Interceptor 类型">
             <el-select v-model="interceptorSelectedVal" placeholder="请选择" style="width: 100%;">
-                <el-option v-for="item in interceptorTypes" :label="item" :key="item" :value="item"></el-option>
+                <el-option v-for="(item, index) in interceptorTypes" :label="item" :key="item" :value="item"></el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="interceptorTypeSelectDiaVis = false">取 消</el-button>
@@ -150,6 +175,7 @@ import Sources from '../../flume-configs/sources';
 import Channels from '../../flume-configs/channels';
 import Sinks from '../../flume-configs/sinks';
 import Interceptors from '../../flume-configs/interceptors';
+import Selectors from "@/flume-configs/selectors";
 import api from "@/api/api";
 import utils from "@/common/utils";
 
@@ -168,6 +194,7 @@ export default {
             Channels,
             Sinks,
             Interceptors,
+            Selectors,
             activeTab: 'Channels',
             interceptorTypeSelectDiaVis: false,
 
@@ -187,6 +214,9 @@ export default {
             interceptorSelectedVal: '',
             interceptorActiveCollapse: '',
             interceptors: [],
+            selector: {
+                type: ''
+            },
 
             sinksActiveCollapse: '',
             sinks: [],
@@ -236,7 +266,8 @@ export default {
                 return;
             }
             this.interceptors.push({
-                type: this.interceptorSelectedVal
+                type: this.interceptorSelectedVal,
+                customType: '',
             });
             this.interceptorSelectedVal = '';
             this.interceptorTypeSelectDiaVis = false;

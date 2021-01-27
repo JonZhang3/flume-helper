@@ -70,7 +70,6 @@ export default {
             const result = this.$refs['form'].validate(valid => {
                 return valid;
             });
-            console.log(result);
         }
     }
 }

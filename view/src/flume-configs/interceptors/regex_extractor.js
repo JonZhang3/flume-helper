@@ -12,6 +12,7 @@ export default {
         description: 'Space-separated list of serializers for mapping matches to header names and serializing their values. (See example below) Flume provides built-in support for the following serializers: org.apache.flume.interceptor.RegexExtractorInterceptorPassThroughSerializer org.apache.flume.interceptor.RegexExtractorInterceptorMillisSerializer'
     },
     'serializers.<>': {
+        selector: 'serializers',
         type: {
             type: String,
             default: 'default',
